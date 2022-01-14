@@ -44,6 +44,7 @@ public class ValidationItemControllerV2 {
         return "validation/v2/addForm";
     }
 
+
     @PostMapping("/add")
     //BindingResult는 @ModelAttribute 뒤에 나와야 한다.!!! 반드시 순서 지킬것!!!!
     public String addItemV1(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
