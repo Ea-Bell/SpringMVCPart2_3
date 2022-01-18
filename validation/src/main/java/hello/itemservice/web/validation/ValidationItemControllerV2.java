@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -187,6 +188,7 @@ public class ValidationItemControllerV2 {
         log.info("target = {}", bindingResult.getTarget());
 
         //검증 로직
+        //ValidationUtils.rejectIfEmptyOrWhitespace(bindingResult, "itemName", "required");
         if(!StringUtils.hasText(item.getItemName())){
             // bindingFauluere:은 들어온 데이터가 잘들어왔는지에 대한 여부 false한 이유 if문에서부터 item.getItemName을 검증을 하고 들어오기때문
             bindingResult.rejectValue("itemName", "required");
