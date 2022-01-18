@@ -24,6 +24,7 @@ import java.util.List;
 public class ValidationItemControllerV2 {
 
     private final ItemRepository itemRepository;
+    private final ItemValidator itemValidator;
 
     @GetMapping
     public String items(Model model) {
@@ -146,6 +147,7 @@ public class ValidationItemControllerV2 {
 
         log.info("objectName = {}", bindingResult.getObjectName());
         log.info("target = {}", bindingResult.getTarget());
+
         //검증 로직
         if(!StringUtils.hasText(item.getItemName())){
             // bindingFauluere:은 들어온 데이터가 잘들어왔는지에 대한 여부 false한 이유 if문에서부터 item.getItemName을 검증을 하고 들어오기때문
@@ -180,7 +182,7 @@ public class ValidationItemControllerV2 {
         redirectAttributes.addAttribute("status", true);
         return "redirect:/validation/v2/items/{itemId}";
     }
-    @PostMapping("/add")
+    //@PostMapping("/add")
     //BindingResult는 @ModelAttribute 뒤에 나와야 한다.!!! 반드시 순서 지킬것!!!!
     public String addItemV4(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
 
@@ -212,6 +214,27 @@ public class ValidationItemControllerV2 {
             if(resultPrice<10000){
                 bindingResult.reject("totalPriceMin", new Object[]{10000, resultPrice}, null);
             }
+        }
+
+        //검증에 실패하면 다시 입력 폼으로
+        if(bindingResult.hasErrors()){
+            log.info("errors = {}", bindingResult);
+            return "validation/v2/addForm";
+        }
+
+        //성공 로직
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/validation/v2/items/{itemId}";
+    }
+
+    @PostMapping("/add")
+    //BindingResult는 @ModelAttribute 뒤에 나와야 한다.!!! 반드시 순서 지킬것!!!!
+    public String addItemV5(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
+
+        if (itemValidator.supports(item.getClass())) {
+            itemValidator.validate(item, bindingResult);
         }
 
         //검증에 실패하면 다시 입력 폼으로
